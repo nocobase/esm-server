@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  verdaccio:
+    image: verdaccio/verdaccio
+    volumes:
+      - ./data/verdaccio:/verdaccio/storage
+      - ./verdaccio-config.yaml:/verdaccio/conf/config.yaml
+    environment:
+      # 在容器网络中使用服务名 verdaccio，而不是宿主机 localhost
+      - VERDACCIO_PUBLIC_URL=http://verdaccio:4873
+
+  esm-server:
+    image: ghcr.io/esm-dev/esm.sh:latest
+    restart: always
+    ports:
+      # 宿主机 8090 -> 容器内 80（镜像默认监听 80）
+      - "8060:80"
+    volumes:
+      # esm.sh 构建缓存目录
+      - ./data/esm/esm:/esm
+      - ./data/esm/data:/data
+    environment:
+      - NODE_ENV=production
+      - NPM_REGISTRY=http://verdaccio:4873
+      - STORAGE_TYPE=fs
+      - STORAGE_ENDPOINT=/data

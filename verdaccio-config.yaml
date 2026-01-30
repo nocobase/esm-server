@@ -1,0 +1,28 @@
+storage: /verdaccio/storage
+
+uplinks:
+  npmjs:
+    # 使用国内镜像源，提升拉包速度与稳定性
+    url: https://registry.npmmirror.com
+    timeout: 60s
+
+packages:
+  '@*/*':
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+  '**':
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+logs:
+  - { type: stdout, format: pretty, level: http }
+
+web:
+  title: "Local Verdaccio"
+
+server:
+  keepAliveTimeout: 60
+
