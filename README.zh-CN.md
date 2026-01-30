@@ -1,10 +1,8 @@
 # ESM Server
 
-NocoBase 前端 RunJS 支持动态加载 ESM 模块。可通过环境变量 `ESM_CDN_BASE_URL` 配置 ESM CDN 地址，默认为 `https://esm.sh`。
+NocoBase 前端 RunJS 支持动态加载 ESM 模块。可通过环境变量 `ESM_CDN_BASE_URL` 配置 ESM CDN 地址，默认为 `https://esm.sh`。内网使用时，可将 https://esm.sh 加入白名单，或自建 ESM CDN 服务（基于 [esm.sh](https://github.com/esm-dev/esm.sh)）。
 
 ESM 模块不能像 UMD 模块那样直接通过 `<script src="...">` 引入即可使用。即便是 npm 包里已经构建好的 ESM（如 `dist/esm.mjs`），也不能在浏览器里直接使用：浏览器不支持裸说明符（如 `import "react"`）、依赖链需要逐层解析、还有 CORS 等限制，所以必须由服务端按「包名 + 版本」解析依赖、产出可被浏览器请求的 URL。UMD 是「打包好、可直接在浏览器里跑」的格式；ESM 则依赖 `import`/`export`、模块解析和 npm 包转换（如 UMD/CJS → ESM），因此需要一套 **ESM CDN 服务**（如 [esm.sh](https://github.com/esm-dev/esm.sh)）在服务端完成构建与转换，再通过 URL 提供给前端。本仓库即用于在自有环境中部署这类服务。
-
-内网使用时，可将 https://esm.sh 加入白名单，或自建 ESM CDN 服务（基于 [esm.sh](https://github.com/esm-dev/esm.sh)）。
 
 ## 前置要求
 
