@@ -64,7 +64,7 @@ services:
 docker compose up -d
 ```
 
-3. 在 NocoBase 中设置 `ESM_CDN_BASE_URL=http://<主机>:8060`。
+3. 在 NocoBase 中设置 `ESM_CDN_BASE_URL=http://localhost:8060`。
 
 ### 方式二：使用私有 npm 镜像（Verdaccio）
 
@@ -118,16 +118,15 @@ docker compose up -d
 1. **在有外网的机器上**  
    - 按上文任选一种方式启动（建议方式一，简单）：  
      `docker compose up -d`  
-   - 在 NocoBase（或直接请求）中使用 RunJS 加载需要的 npm 包，或主动请求一次目标 ESM 地址（如 `http://<host>:8060/vue@3`），使 esm.sh 构建并写入缓存。
+   - 在 NocoBase（或直接请求）中使用 RunJS 加载需要的 npm 包，或主动请求一次目标 ESM 地址（如 `http://localhost:8060/vue@3`），使 esm.sh 构建并写入缓存。
 
 2. **同步缓存**  
-   - 将整份 **`./data/esm`** 目录拷贝到内网机器的同一路径下（例如内网机同样使用 `storage/esm-server/data/esm`）。
+   - 将整份 **`./data/esm`** 目录拷贝到内网机器的同一路径下（例如内网机同样使用 `./data/esm`）。
 
 3. **在内网机器上**  
    - 使用同一 `docker-compose` 配置启动：  
      `docker compose up -d`  
    - 已构建过的包会由本地缓存响应；未在缓存中的包会请求失败，需在可外网机器上先请求一次，再重新同步 `./data/esm`。
-
 
 ## 非 Docker 部署
 
