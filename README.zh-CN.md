@@ -109,7 +109,7 @@ docker compose up -d
 
 `verdaccio-config.yaml` 中已配置对公共包的代理（如 `npmmirror.com`），私有包可按需配置 `packages` 与 `publish`。
 
-## 内网/离线部署
+## 内网/离线 Docker 部署
 
 在内网或无外网环境中，esm.sh 无法实时拉取 npm 包，需先用「有外网的机器」生成缓存，再拷贝到内网使用。
 
@@ -125,6 +125,56 @@ docker compose up -d
    - 使用同一 `docker-compose` 配置启动：  
      `docker compose up -d`  
    - 已构建过的包会由本地缓存响应；未在缓存中的包会请求失败，需在可外网机器上先请求一次，再重新同步 `./data/esm`。
+
+
+## 非 Docker 部署
+
+不依赖 Docker 时，可从源码编译并直接运行 [esm.sh](https://github.com/esm-dev/esm.sh)。
+
+### 前置要求
+
+- [Go](https://go.dev/dl/) 1.21+（用于编译）
+- 可访问外网或已配置内网 npm 源（用于拉取 npm 包）
+
+### 构建与运行
+
+```bash
+git clone https://github.com/esm-dev/esm.sh.git
+cd esm.sh
+go build -ldflags="-s -w -X 'github.com/esm-dev/esm.sh/server.VERSION=main'" -o esmd server/esmd/main.go
+```
+
+**直接运行**（使用默认配置，监听 80 端口，数据目录 `~/.esmd`）：
+
+```bash
+./esmd
+```
+
+**指定配置文件运行**（推荐，便于改端口和 npm 源等）：
+
+```bash
+./esmd -config /path/to/config.json
+```
+
+### 配置文件
+
+配置为 JSON/JSONC 格式。官方示例见 [config.example.jsonc](https://github.com/esm-dev/esm.sh/blob/main/config.example.jsonc)。
+
+示例 `config.json`（监听 8060、使用国内源、本地存储）：
+
+```json
+{
+  "port": 8060,
+  "npmRegistry": "https://registry.npmmirror.com",
+  "storage": {
+    "type": "fs",
+    "endpoint": "~/.esmd/storage"
+  },
+  "workDir": "~/.esmd"
+}
+```
+
+内网/私有包场景：将 `npmRegistry` 改为内网 Verdaccio 地址（如 `http://verdaccio-host:4873`），必要时配置 `npmScopedRegistries`、`npmToken` 等。
 
 ## 常见问题
 
